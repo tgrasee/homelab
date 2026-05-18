@@ -1,0 +1,32 @@
+# Proxmox VE 9.1 Unattended Install Answer File
+# Docs: https://pve.proxmox.com/wiki/Automated_Installation
+#
+# HOW TO USE:
+#   1. Download Proxmox VE 9.1 ISO
+#   2. Write ISO to USB with Rufus
+#   3. Place this file at the root of the USB as "answer.toml"
+#   4. Boot from USB — installer reads this file and runs unattended
+
+[global]
+keyboard = "en-us"
+country = "us"
+fqdn = "pve.home.lab"
+mailto = "admin@home.lab"
+timezone = "America/New_York"
+root_password = "CHANGE_ME_BEFORE_USE"   # Change before use!
+root_ssh_keys = [
+  # Paste your public SSH key here
+  # "ssh-ed25519 AAAAC3... user@workstation"
+]
+
+[network]
+source = "from-dhcp"   # Change to "static" for a fixed IP (recommended)
+# Uncomment below and set source = "static" for a fixed IP:
+# cidr = "10.0.1.10/24"
+# gateway = "10.0.1.1"
+# dns = "10.0.1.1"
+
+[disk-setup]
+filesystem = "zfs"
+zfs.raid = "single"    # Single disk — change to "mirror" if you add a second drive
+disk_list = ["sda"]    # Verify disk name with: lsblk
