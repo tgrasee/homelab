@@ -1,4 +1,4 @@
-# Homelab — Automated Infrastructure & Monitoring Stack
+# Homelab - Automated Infrastructure & Monitoring Stack
 
 > Fully automated homelab built on a Dell OptiPlex with Ubiquiti networking.
 > Proxmox is provisioned via answer file, configured with Ansible, VMs are
@@ -11,15 +11,15 @@
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                 Dell OptiPlex (Host)                 │
+│                 Dell OptiPlex (Host)                │
 │                                                     │
 │   ┌─────────────────────────────────────────────┐   │
-│   │              Proxmox VE 8.x                  │   │
+│   │              Proxmox VE 8.x                 │   │
 │   │                                             │   │
-│   │  ┌──────────────┐   ┌──────────────────┐   │   │
-│   │  │  monitoring  │   │  (future VMs)    │   │   │
-│   │  │     VM       │   │                  │   │   │
-│   │  │  ┌────────┐  │   └──────────────────┘   │   │
+│   │  ┌──────────────┐   ┌──────────────────┐    │   │
+│   │  │  monitoring  │   │  (future VMs)    │    │   │
+│   │  │     VM       │   │                  │    │   │
+│   │  │  ┌────────┐  │   └──────────────────┘    │   │
 │   │  │  │Grafana │  │                           │   │
 │   │  │  │Promeths│  │                           │   │
 │   │  │  │  Loki  │  │                           │   │
