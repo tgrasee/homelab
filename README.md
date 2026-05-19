@@ -129,6 +129,12 @@ terraform apply
 ```
 
 ### 4. Deploy the Monitoring Stack
+
+> **Note:** Before running Ansible against a newly provisioned VM, SSH into it once manually to accept the host key. Ansible will fail with a host key verification error if this hasn't been done.
+> ```bash
+> ssh root@<vm-ip>   # type 'yes' when prompted, then exit
+> ```
+
 ```bash
 cd ansible
 ansible-playbook -i inventory/hosts.yml site.yml --tags monitoring
