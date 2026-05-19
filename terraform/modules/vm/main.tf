@@ -1,37 +1,50 @@
 terraform {
   required_providers {
     proxmox = {
-      source  = "telmate/proxmox"
-      version = "~> 2.9"
+      source  = "bpg/proxmox"
+      version = "~> 0.73"
     }
   }
 }
 
-resource "proxmox_vm_qemu" "vm" {
-  name        = var.vm_name
-  vmid        = var.vm_id
-  target_node = var.target_node
-  clone       = var.clone_template
+resource "proxmox_virtual_environment_vm" "vm" {
+  name      = var.vm_name
+  vm_id     = var.vm_id
+  node_name = var.target_node
 
-  cores  = var.cores
-  memory = var.memory
-
-  disk {
-    slot    = 0
-    size    = var.disk_size
-    type    = "scsi"
-    storage = "local-lvm"
+  clone {
+    vm_id = var.clone_template_id
   }
 
-  network {
+  cpu {
+    cores = var.cores
+  }
+
+  memory {
+    dedicated = var.memory
+  }
+
+  disk {
+    datastore_id = "local-lvm"
+    interface    = "scsi0"
+    size         = var.disk_size
+  }
+
+  network_device {
     model  = "virtio"
     bridge = "vmbr0"
   }
 
-  ipconfig0 = "ip=${var.ip_address},gw=${var.gateway}"
-  sshkeys   = var.ssh_public_key
+  initialization {
+    ip_config {
+      ipv4 {
+        address = var.ip_address
+        gateway = var.gateway
+      }
+    }
 
-  lifecycle {
-    ignore_changes = [network]
+    user_account {
+      keys = [var.ssh_public_key]
+    }
   }
 }
