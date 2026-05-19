@@ -1,32 +1,32 @@
 terraform {
   required_providers {
     proxmox = {
-      source  = "telmate/proxmox"
-      version = "~> 2.9"
+      source  = "bpg/proxmox"
+      version = "~> 0.73"
     }
   }
 }
 
 provider "proxmox" {
-  pm_api_url      = var.proxmox_api_url
-  pm_user         = var.proxmox_user
-  pm_password     = var.proxmox_password
-  pm_tls_insecure = true   # Set false if you add a real TLS cert to Proxmox
+  endpoint  = var.proxmox_api_url
+  username  = var.proxmox_user
+  password  = var.proxmox_password
+  insecure  = true   # Set false if you add a real TLS cert to Proxmox
 }
 
 module "monitoring_vm" {
   source = "../../modules/vm"
 
-  vm_name        = "monitoring"
-  vm_id          = 100
-  target_node    = var.target_node
-  clone_template = var.clone_template
-  cores          = 2
-  memory         = 4096
-  disk_size      = "32G"
-  ip_address     = var.monitoring_ip
-  gateway        = var.gateway
-  ssh_public_key = var.ssh_public_key
+  vm_name           = "monitoring"
+  vm_id             = 100
+  target_node       = var.target_node
+  clone_template_id = var.clone_template_id
+  cores             = 2
+  memory            = 4096
+  disk_size         = 32
+  ip_address        = var.monitoring_ip
+  gateway           = var.gateway
+  ssh_public_key    = var.ssh_public_key
 }
 
 variable "proxmox_api_url" {
@@ -40,10 +40,10 @@ variable "target_node" {
   default     = "pve"
 }
 
-variable "clone_template" {
-  description = "Proxmox cloud-init template name to clone (see runbook Step 4)"
-  type        = string
-  default     = "ubuntu-22.04-template"
+variable "clone_template_id" {
+  description = "VM ID of the Proxmox cloud-init template to clone (see runbook Step 4)"
+  type        = number
+  default     = 9000
 }
 
 variable "proxmox_user" {
