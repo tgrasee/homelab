@@ -13,9 +13,9 @@ variable "target_node" {
   type        = string
 }
 
-variable "clone_template" {
-  description = "Name of the Proxmox cloud-init template to clone"
-  type        = string
+variable "clone_template_id" {
+  description = "VM ID of the Proxmox cloud-init template to clone (e.g. 9000)"
+  type        = number
 }
 
 variable "cores" {
