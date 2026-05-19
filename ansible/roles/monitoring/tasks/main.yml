@@ -1,0 +1,28 @@
+---
+# Deploy Grafana + Prometheus + Loki monitoring stack
+
+- name: Create monitoring directory
+  file:
+    path: /opt/monitoring
+    state: directory
+    mode: "0755"
+
+- name: Copy docker-compose.yml
+  copy:
+    src: "{{ playbook_dir }}/../docker/monitoring/docker-compose.yml"
+    dest: /opt/monitoring/docker-compose.yml
+
+- name: Copy prometheus config
+  copy:
+    src: "{{ playbook_dir }}/../docker/monitoring/prometheus.yml"
+    dest: /opt/monitoring/prometheus.yml
+
+- name: Copy .env file
+  copy:
+    src: "{{ playbook_dir }}/../docker/monitoring/.env.example"
+    dest: /opt/monitoring/.env
+
+- name: Start monitoring stack
+  community.docker.docker_compose_v2:
+    project_src: /opt/monitoring
+    state: present

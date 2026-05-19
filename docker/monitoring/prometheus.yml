@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+
+  # Prometheus self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Host metrics via Node Exporter
+  - job_name: "node_exporter"
+    static_configs:
+      - targets: ["node_exporter:9100"]
+
+  # Add Proxmox exporter here once configured
+  # - job_name: "proxmox"
+  #   static_configs:
+  #     - targets: ["10.0.1.10:9221"]

@@ -14,7 +14,7 @@
 │                 Dell OptiPlex (Host)                │
 │                                                     │
 │   ┌─────────────────────────────────────────────┐   │
-│   │              Proxmox VE 8.x                 │   │
+│   │              Proxmox VE 9.x                 │   │
 │   │                                             │   │
 │   │  ┌──────────────┐   ┌──────────────────┐    │   │
 │   │  │  monitoring  │   │  (future VMs)    │    │   │
@@ -43,7 +43,7 @@
 
 | Layer | Tool | Purpose |
 |---|---|---|
-| Hypervisor | Proxmox VE 8 | Bare metal virtualization |
+| Hypervisor | Proxmox VE 9 | Bare metal virtualization |
 | Bare metal provisioning | Proxmox Answer File | Unattended OS install |
 | Configuration management | Ansible | Post-install config & app deployment |
 | Infrastructure as Code | Terraform | VM/LXC lifecycle management |
@@ -60,7 +60,7 @@
 ```
 homelab/
 ├── proxmox-install/         # Unattended Proxmox ISO install
-│   ├── answer-file.toml     # Proxmox 8 answer file for automated install
+│   ├── answer-file.toml     # Proxmox 9 answer file for automated install
 │   └── README.md            # How to use the answer file
 │
 ├── ansible/                 # Post-install config & app deployment
@@ -96,16 +96,16 @@ homelab/
 
 ### Prerequisites
 - Dell OptiPlex (or similar x86_64 machine)
-- Proxmox VE 8 ISO downloaded
+- Proxmox VE 9 ISO downloaded
 - Ansible and Terraform installed on your workstation
 - SSH key pair generated
 
 ### 1. Install Proxmox (Unattended)
 See [`proxmox-install/README.md`](proxmox-install/README.md) for full instructions.
 
-```bash
+```
 # Copy answer file to a USB alongside the Proxmox ISO
-# Boot from USB — install completes automatically
+# Boot from USB - install completes automatically
 ```
 
 ### 2. Configure Proxmox Host

@@ -1,0 +1,27 @@
+---
+# Master playbook — run all roles in order
+# Usage:
+#   ansible-playbook -i inventory/hosts.yml site.yml
+#   ansible-playbook -i inventory/hosts.yml site.yml --tags proxmox-base
+#   ansible-playbook -i inventory/hosts.yml site.yml --tags monitoring
+
+- name: Configure Proxmox host
+  hosts: proxmox
+  become: true
+  roles:
+    - role: proxmox-base
+      tags: proxmox-base
+
+- name: Install Docker on VMs
+  hosts: monitoring_vms
+  become: true
+  roles:
+    - role: docker
+      tags: docker
+
+- name: Deploy monitoring stack
+  hosts: monitoring_vms
+  become: true
+  roles:
+    - role: monitoring
+      tags: monitoring
