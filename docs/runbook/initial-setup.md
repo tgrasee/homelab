@@ -13,6 +13,15 @@ sudo apt install ansible
 # Terraform: https://developer.hashicorp.com/terraform/install
 ```
 
+```powershell
+# Windows
+wsl --install
+
+# inside WSL
+sudo apt update
+sudo apt install ansible
+```
+
 Generate an SSH key pair if you don't have one:
 
 ```bash
