@@ -1,0 +1,83 @@
+---
+# Proxmox host base configuration: repo setup, system hardening, node_exporter
+
+- name: Remove Proxmox enterprise subscription repo
+  file:
+    path: /etc/apt/sources.list.d/pve-enterprise.list
+    state: absent
+
+- name: Add Proxmox no-subscription community repo
+  apt_repository:
+    repo: "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription"
+    filename: pve-no-subscription
+    state: present
+
+- name: Upgrade all packages
+  apt:
+    upgrade: dist
+    update_cache: yes
+
+- name: Install base packages
+  apt:
+    name:
+      - curl
+      - wget
+      - vim
+      - htop
+      - net-tools
+      - gnupg
+    state: present
+
+- name: Disable SSH password authentication
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+  notify: Restart sshd
+
+- name: Restrict root SSH to key-based login only
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin prohibit-password"
+  notify: Restart sshd
+
+- name: Download node_exporter
+  get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp/node_exporter.tar.gz
+
+- name: Extract node_exporter
+  unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Install node_exporter binary
+  copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: /usr/local/bin/node_exporter
+    mode: "0755"
+    remote_src: yes
+
+- name: Create node_exporter systemd service
+  copy:
+    dest: /etc/systemd/system/node_exporter.service
+    content: |
+      [Unit]
+      Description=Prometheus Node Exporter
+      After=network.target
+
+      [Service]
+      ExecStart=/usr/local/bin/node_exporter
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Enable and start node_exporter
+  service:
+    name: node_exporter
+    enabled: yes
+    state: started
+    daemon_reload: yes

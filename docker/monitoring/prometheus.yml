@@ -14,7 +14,12 @@ scrape_configs:
     static_configs:
       - targets: ["node_exporter:9100"]
 
-  # Add Proxmox exporter here once configured
-  # - job_name: "proxmox"
+  # Proxmox host metrics (node_exporter installed via proxmox-base Ansible role)
+  - job_name: "proxmox_host"
+    static_configs:
+      - targets: ["192.168.1.37:9100"]
+
+  # Add Proxmox VE exporter here once configured (VM/LXC metrics)
+  # - job_name: "proxmox_ve"
   #   static_configs:
-  #     - targets: ["10.0.1.10:9221"]
+  #     - targets: ["192.168.1.37:9221"]

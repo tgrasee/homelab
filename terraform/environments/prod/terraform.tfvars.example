@@ -1,0 +1,14 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored — never commit it.
+
+proxmox_api_url  = "https://192.168.1.37:8006/api2/json"
+proxmox_user     = "root@pam"
+proxmox_password = "your_proxmox_password"
+
+target_node    = "pve"
+clone_template = "ubuntu-22.04-template"
+
+monitoring_ip  = "192.168.1.50/24"
+gateway        = "192.168.1.1"
+
+ssh_public_key = "ssh-ed25519 AAAA... user@workstation"

@@ -19,6 +19,8 @@ module "monitoring_vm" {
 
   vm_name        = "monitoring"
   vm_id          = 100
+  target_node    = var.target_node
+  clone_template = var.clone_template
   cores          = 2
   memory         = 4096
   disk_size      = "32G"
@@ -28,8 +30,20 @@ module "monitoring_vm" {
 }
 
 variable "proxmox_api_url" {
-  description = "Proxmox API URL (e.g. https://10.0.1.10:8006/api2/json)"
+  description = "Proxmox API URL (e.g. https://192.168.1.37:8006/api2/json)"
   type        = string
+}
+
+variable "target_node" {
+  description = "Proxmox node name (shown in the Proxmox UI, typically 'pve')"
+  type        = string
+  default     = "pve"
+}
+
+variable "clone_template" {
+  description = "Proxmox cloud-init template name to clone (see runbook Step 4)"
+  type        = string
+  default     = "ubuntu-22.04-template"
 }
 
 variable "proxmox_user" {

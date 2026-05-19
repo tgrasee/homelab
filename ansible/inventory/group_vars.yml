@@ -1,0 +1,7 @@
+---
+# Variables applied to all hosts in the inventory
+
+all:
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    timezone: America/New_York
