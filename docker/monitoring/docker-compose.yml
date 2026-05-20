@@ -59,6 +59,19 @@ services:
       - loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
 
+  # ── UnPoller (UniFi exporter for Prometheus) ─────────────────
+  unpoller:
+    image: ghcr.io/unpoller/unpoller:latest
+    container_name: unpoller
+    restart: unless-stopped
+    environment:
+      - UP_UNIFI_DEFAULT_URL=https://192.168.1.1
+      - UP_UNIFI_DEFAULT_USER=${UNIFI_USER}
+      - UP_UNIFI_DEFAULT_PASS=${UNIFI_PASSWORD}
+      - UP_UNIFI_DEFAULT_VERIFY_SSL=false
+      - UP_INFLUXDB_DISABLE=true
+      - UP_PROMETHEUS_DISABLE=false
+
   # ── Promtail (log shipper) ────────────────────────────────────
   promtail:
     image: grafana/promtail:latest

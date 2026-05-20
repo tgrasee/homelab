@@ -19,6 +19,11 @@ scrape_configs:
     static_configs:
       - targets: ["192.168.1.37:9100"]
 
+  # UniFi metrics via UnPoller
+  - job_name: "unpoller"
+    static_configs:
+      - targets: ["unpoller:9130"]
+
   # Add Proxmox VE exporter here once configured (VM/LXC metrics)
   # - job_name: "proxmox_ve"
   #   static_configs:
