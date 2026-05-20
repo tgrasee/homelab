@@ -31,9 +31,15 @@ variable "memory" {
 }
 
 variable "disk_size" {
-  description = "Disk size (e.g. '32G')"
-  type        = string
-  default     = "20G"
+  description = "OS disk size in GB"
+  type        = number
+  default     = 20
+}
+
+variable "data_disk_size" {
+  description = "Optional second data disk size in GB (0 to disable)"
+  type        = number
+  default     = 0
 }
 
 variable "ip_address" {

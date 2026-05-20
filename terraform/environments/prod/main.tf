@@ -29,6 +29,22 @@ module "monitoring_vm" {
   ssh_public_key    = var.ssh_public_key
 }
 
+module "pbs_vm" {
+  source = "../../modules/vm"
+
+  vm_name           = "pbs"
+  vm_id             = 101
+  target_node       = var.target_node
+  clone_template_id = var.clone_template_id
+  cores             = 2
+  memory            = 4096
+  disk_size         = 16
+  data_disk_size    = 60
+  ip_address        = var.pbs_ip
+  gateway           = var.gateway
+  ssh_public_key    = var.ssh_public_key
+}
+
 variable "proxmox_api_url" {
   description = "Proxmox API URL (e.g. https://192.168.1.37:8006/api2/json)"
   type        = string
@@ -62,6 +78,12 @@ variable "monitoring_ip" {
   description = "Static IP for monitoring VM"
   type        = string
   default     = "10.0.10.10/24"
+}
+
+variable "pbs_ip" {
+  description = "Static IP for Proxmox Backup Server VM"
+  type        = string
+  default     = "192.168.1.51/24"
 }
 
 variable "gateway" {

@@ -9,6 +9,7 @@ target_node    = "pve"
 clone_template_id = 9000
 
 monitoring_ip  = "192.168.1.50/24"
+pbs_ip         = "192.168.1.51/24"
 gateway        = "192.168.1.1"
 
 ssh_public_key = "ssh-ed25519 AAAA... user@workstation"

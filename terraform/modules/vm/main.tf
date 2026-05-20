@@ -30,6 +30,15 @@ resource "proxmox_virtual_environment_vm" "vm" {
     size         = var.disk_size
   }
 
+  dynamic "disk" {
+    for_each = var.data_disk_size > 0 ? [1] : []
+    content {
+      datastore_id = "local-lvm"
+      interface    = "scsi1"
+      size         = var.data_disk_size
+    }
+  }
+
   network_device {
     model  = "virtio"
     bridge = "vmbr0"
