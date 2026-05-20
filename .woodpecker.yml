@@ -1,0 +1,12 @@
+---
+steps:
+  - name: ansible-lint
+    image: pipelinecomponents/ansible-lint:latest
+    commands:
+      - ansible-lint ansible/
+
+  - name: terraform-validate
+    image: hashicorp/terraform:1.9
+    commands:
+      - terraform -chdir=terraform/environments/prod init -backend=false
+      - terraform -chdir=terraform/environments/prod validate
