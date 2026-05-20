@@ -51,7 +51,8 @@
 | Metrics | Prometheus | Time-series metrics collection |
 | Logging | Loki + Promtail | Log aggregation |
 | Visualization | Grafana | Dashboards & alerting |
-| Networking | Ubiquiti UniFi | VLANs, firewall, switching |
+| UniFi metrics | UnPoller | Exports UCG Ultra metrics to Prometheus |
+| Networking | Ubiquiti UniFi (UCG Ultra) | VLANs, firewall, switching |
 
 ---
 
@@ -81,9 +82,12 @@ homelab/
 │
 ├── docker/
 │   └── monitoring/
-│       ├── docker-compose.yml  # Grafana + Prometheus + Loki
-│       ├── prometheus.yml      # Scrape config
-│       └── .env.example        # Environment variable template
+│       ├── docker-compose.yml          # Grafana + Prometheus + Loki + UnPoller
+│       ├── prometheus.yml              # Scrape config
+│       ├── .env.example                # Environment variable template
+│       └── provisioning/
+│           └── datasources/
+│               └── datasources.yml    # Auto-provisions Prometheus & Loki in Grafana
 │
 └── docs/
     ├── architecture/        # Architecture diagrams & decisions
@@ -147,16 +151,33 @@ ansible-playbook -i inventory/hosts.yml site.yml --tags monitoring
 
 Grafana will be available at `http://<vm-ip>:3000` — Prometheus and Loki are auto-configured as datasources.
 
+### 6. Configure UniFi Metrics (UnPoller)
+
+Create a read-only local admin user in your UCG Ultra (UniFi OS → Users → Add User, Network role: View Only, all other apps: No Access).
+
+Add credentials to `/opt/monitoring/.env` on the monitoring VM:
+```
+UNIFI_USER=unpoller
+UNIFI_PASSWORD=your-password
+```
+
+Then restart Prometheus to pick up the scrape config:
+```bash
+sudo docker restart prometheus
+```
+
+Import the UnPoller dashboard in Grafana: **Dashboards → Import → ID `11315`**
+
 ---
 
 ## Monitoring Dashboards
 
-| Dashboard | Description |
-|---|---|
-| Node Exporter | Host CPU, memory, disk, network |
-| Proxmox | VM/LXC resource usage |
-| UniFi | Switch ports, AP clients, WAN throughput |
-| Loki Logs | Aggregated logs from all services |
+| Dashboard | Grafana ID | Description |
+|---|---|---|
+| Node Exporter | 1860 | Host CPU, memory, disk, network |
+| Proxmox | - | VM/LXC resource usage |
+| UniFi (UnPoller) | 11315 | UCG Ultra — clients, AP stats, WAN throughput |
+| Loki Logs | - | Aggregated logs from all services |
 
 ---
 
@@ -179,7 +200,7 @@ VLANs are segmented as follows:
 - [x] Ansible: Docker install role
 - [x] Terraform: VM module
 - [x] Monitoring stack (Grafana + Prometheus + Loki)
-- [ ] Ubiquiti UniFi exporter for Prometheus
+- [x] Ubiquiti UniFi exporter for Prometheus (UnPoller → UCG Ultra)
 - [ ] Automated backups with Proxmox Backup Server
 - [ ] Gitea self-hosted Git mirror
 - [ ] CI/CD pipeline with Woodpecker CI
