@@ -2,7 +2,7 @@
 # Install Docker Engine and Docker Compose plugin
 
 - name: Install Docker dependencies
-  apt:
+  ansible.builtin.apt:
     name:
       - ca-certificates
       - curl
@@ -10,16 +10,19 @@
     state: present
 
 - name: Add Docker GPG key
-  shell: |
+  ansible.builtin.shell: |
+    set -o pipefail
     install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
       gpg --dearmor -o /etc/apt/keyrings/docker.gpg
     chmod a+r /etc/apt/keyrings/docker.gpg
   args:
     creates: /etc/apt/keyrings/docker.gpg
+    executable: /bin/bash
 
 - name: Add Docker apt repo
-  shell: |
+  ansible.builtin.shell: |
+    set -o pipefail
     echo \
       "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
       https://download.docker.com/linux/ubuntu \
@@ -27,20 +30,21 @@
       tee /etc/apt/sources.list.d/docker.list > /dev/null
   args:
     creates: /etc/apt/sources.list.d/docker.list
+    executable: /bin/bash
 
 - name: Install Docker
-  apt:
+  ansible.builtin.apt:
     name:
       - docker-ce
       - docker-ce-cli
       - containerd.io
       - docker-buildx-plugin
       - docker-compose-plugin
-    update_cache: yes
+    update_cache: true
     state: present
 
 - name: Enable and start Docker
-  service:
+  ansible.builtin.service:
     name: docker
-    enabled: yes
+    enabled: true
     state: started

@@ -2,7 +2,7 @@
 # Proxmox host base configuration: repo setup, system hardening, node_exporter
 
 - name: Remove Proxmox enterprise repo files
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
@@ -12,18 +12,18 @@
     - /etc/apt/sources.list.d/ceph.sources
 
 - name: Add Proxmox no-subscription community repo
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb http://download.proxmox.com/debian/pve trixie pve-no-subscription"
     filename: pve-no-subscription
     state: present
 
 - name: Upgrade all packages
-  apt:
+  ansible.builtin.apt:
     upgrade: dist
-    update_cache: yes
+    update_cache: true
 
 - name: Install base packages
-  apt:
+  ansible.builtin.apt:
     name:
       - curl
       - wget
@@ -34,40 +34,43 @@
     state: present
 
 - name: Disable SSH password authentication
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "^#?PasswordAuthentication"
     line: "PasswordAuthentication no"
   notify: Restart sshd
 
 - name: Restrict root SSH to key-based login only
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "^#?PermitRootLogin"
     line: "PermitRootLogin prohibit-password"
   notify: Restart sshd
 
 - name: Download node_exporter
-  get_url:
-    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+  ansible.builtin.get_url:
+    url: >-
+      https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz
     dest: /tmp/node_exporter.tar.gz
+    mode: "0644"
 
 - name: Extract node_exporter
-  unarchive:
+  ansible.builtin.unarchive:
     src: /tmp/node_exporter.tar.gz
     dest: /tmp
-    remote_src: yes
+    remote_src: true
 
 - name: Install node_exporter binary
-  copy:
+  ansible.builtin.copy:
     src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
     dest: /usr/local/bin/node_exporter
     mode: "0755"
-    remote_src: yes
+    remote_src: true
 
 - name: Create node_exporter systemd service
-  copy:
+  ansible.builtin.copy:
     dest: /etc/systemd/system/node_exporter.service
+    mode: "0644"
     content: |
       [Unit]
       Description=Prometheus Node Exporter
@@ -81,8 +84,8 @@
       WantedBy=multi-user.target
 
 - name: Enable and start node_exporter
-  service:
+  ansible.builtin.service:
     name: node_exporter
-    enabled: yes
+    enabled: true
     state: started
-    daemon_reload: yes
+    daemon_reload: true

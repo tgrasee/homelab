@@ -1,6 +1,6 @@
 ---
 - name: Install dependencies
-  apt:
+  ansible.builtin.apt:
     name:
       - curl
       - gnupg
@@ -8,42 +8,42 @@
     update_cache: true
 
 - name: Add Proxmox Backup Server repository key
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://enterprise.proxmox.com/debian/proxmox-release-bookworm.gpg
     state: present
 
 - name: Add Proxmox Backup Server no-subscription repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb http://download.proxmox.com/debian/pbs bookworm pbs-no-subscription"
     state: present
     filename: pbs-no-subscription
 
 - name: Install Proxmox Backup Server
-  apt:
+  ansible.builtin.apt:
     name: proxmox-backup-server
     state: present
     update_cache: true
 
 - name: Ensure PBS service is running
-  systemd:
+  ansible.builtin.systemd:
     name: proxmox-backup
     state: started
     enabled: true
 
 - name: Create backup datastore mount point
-  file:
+  ansible.builtin.file:
     path: /mnt/backup
     state: directory
     mode: "0755"
 
 - name: Format backup disk if not already formatted
-  filesystem:
+  community.general.filesystem:
     fstype: ext4
     dev: /dev/sdb
     force: false
 
 - name: Mount backup disk
-  mount:
+  ansible.posix.mount:
     path: /mnt/backup
     src: /dev/sdb
     fstype: ext4
@@ -51,7 +51,7 @@
     state: mounted
 
 - name: Create PBS datastore directory
-  file:
+  ansible.builtin.file:
     path: /mnt/backup/pbs
     state: directory
     owner: backup
@@ -59,7 +59,7 @@
     mode: "0755"
 
 - name: Create PBS datastore
-  command: proxmox-backup-manager datastore create main /mnt/backup/pbs
+  ansible.builtin.command: proxmox-backup-manager datastore create main /mnt/backup/pbs
   register: datastore_result
   failed_when:
     - datastore_result.rc != 0

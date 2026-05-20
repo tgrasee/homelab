@@ -2,31 +2,35 @@
 # Deploy Grafana + Prometheus + Loki monitoring stack
 
 - name: Create monitoring directory
-  file:
+  ansible.builtin.file:
     path: /opt/monitoring
     state: directory
     mode: "0755"
 
 - name: Copy docker-compose.yml
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/../docker/monitoring/docker-compose.yml"
     dest: /opt/monitoring/docker-compose.yml
+    mode: "0644"
 
 - name: Copy prometheus config
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/../docker/monitoring/prometheus.yml"
     dest: /opt/monitoring/prometheus.yml
+    mode: "0644"
 
 - name: Create .env from example if it does not exist
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/../docker/monitoring/.env.example"
     dest: /opt/monitoring/.env
     force: false
+    mode: "0600"
 
 - name: Copy Grafana provisioning config
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/../docker/monitoring/provisioning/"
     dest: /opt/monitoring/provisioning/
+    mode: "0644"
 
 - name: Start monitoring stack
   community.docker.docker_compose_v2:
