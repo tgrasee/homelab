@@ -47,6 +47,7 @@
 | Bare metal provisioning | Proxmox Answer File | Unattended OS install |
 | Configuration management | Ansible | Post-install config & app deployment |
 | Infrastructure as Code | Terraform | VM/LXC lifecycle management |
+| Backups | Proxmox Backup Server | Automated nightly VM snapshots |
 | Containerization | Docker + Compose | App packaging |
 | Metrics | Prometheus | Time-series metrics collection |
 | Logging | Loki + Promtail | Log aggregation |
@@ -72,7 +73,8 @@ homelab/
 │   └── roles/
 │       ├── proxmox-base/    # Proxmox host hardening & config
 │       ├── docker/          # Docker + Compose install
-│       └── monitoring/      # Deploy the monitoring stack
+│       ├── monitoring/      # Deploy the monitoring stack
+│       └── proxmox-backup/  # Install & configure Proxmox Backup Server
 │
 ├── terraform/               # VM provisioning
 │   ├── modules/
@@ -122,17 +124,23 @@ cd ansible
 ansible-playbook -i inventory/hosts.yml site.yml --tags proxmox-base
 ```
 
-### 4. Create Cloud-Init Template & Provision VM
-```bash
-# On Proxmox host: create Ubuntu 22.04 cloud-init template (VM ID 9000)
-# See runbook Step 5 for full commands
+### 4. Create Cloud-Init Templates & Provision VMs
 
+Two templates are required:
+- **Ubuntu 22.04** (VM ID 9000) — for the monitoring VM
+- **Debian 12** (VM ID 9001) — for the PBS VM (PBS packages require Debian Bookworm)
+
+See runbook Step 5 for the full `qm` commands for each template.
+
+```bash
 cd terraform/environments/prod
 cp terraform.tfvars.example terraform.tfvars
 # Edit terraform.tfvars — use 'cat ~/.ssh/id_ed25519.pub' for the SSH key value
 
 terraform init && terraform plan && terraform apply
 ```
+
+> **Note:** After provisioning each VM, SSH in once to accept the host key before running Ansible. Ubuntu VMs use `ubuntu` as the default user; Debian VMs use `debian`.
 
 ### 5. Deploy the Monitoring Stack
 
@@ -168,6 +176,22 @@ sudo docker restart prometheus
 
 Import the UnPoller dashboard in Grafana: **Dashboards → Import → ID `11315`**
 
+### 7. Deploy Proxmox Backup Server
+
+```bash
+cd ansible
+ansible-playbook -i inventory/hosts.yml site.yml --tags pbs
+```
+
+Then connect PBS to Proxmox:
+1. Proxmox UI → **Datacenter → Storage → Add → Proxmox Backup Server**
+2. Server: `192.168.1.51`, Username: `root@pam`, Datastore: `main`
+3. Get the fingerprint from the PBS VM: `sudo proxmox-backup-manager cert info | grep Fingerprint`
+
+Set up a backup schedule at **Datacenter → Backup → Add** (recommended: daily, Snapshot mode, ZSTD compression).
+
+> **Note:** Set a root password on the PBS VM via SSH before accessing the web UI: `sudo passwd root`
+
 ---
 
 ## Monitoring Dashboards
@@ -201,7 +225,7 @@ VLANs are segmented as follows:
 - [x] Terraform: VM module
 - [x] Monitoring stack (Grafana + Prometheus + Loki)
 - [x] Ubiquiti UniFi exporter for Prometheus (UnPoller → UCG Ultra)
-- [ ] Automated backups with Proxmox Backup Server
+- [x] Automated backups with Proxmox Backup Server (VM 101, nightly snapshots)
 - [ ] Gitea self-hosted Git mirror
 - [ ] CI/CD pipeline with Woodpecker CI
 
