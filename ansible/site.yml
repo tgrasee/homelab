@@ -25,3 +25,10 @@
   roles:
     - role: monitoring
       tags: monitoring
+
+- name: Install Proxmox Backup Server
+  hosts: pbs_vms
+  become: true
+  roles:
+    - role: proxmox-backup
+      tags: pbs

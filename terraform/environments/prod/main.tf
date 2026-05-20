@@ -35,7 +35,7 @@ module "pbs_vm" {
   vm_name           = "pbs"
   vm_id             = 101
   target_node       = var.target_node
-  clone_template_id = var.clone_template_id
+  clone_template_id = var.debian_template_id
   cores             = 2
   memory            = 4096
   disk_size         = 16
@@ -84,6 +84,12 @@ variable "pbs_ip" {
   description = "Static IP for Proxmox Backup Server VM"
   type        = string
   default     = "192.168.1.51/24"
+}
+
+variable "debian_template_id" {
+  description = "VM ID of the Debian 12 cloud-init template (for PBS)"
+  type        = number
+  default     = 9001
 }
 
 variable "gateway" {
