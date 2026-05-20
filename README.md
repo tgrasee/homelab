@@ -223,6 +223,16 @@ Woodpecker CI is available at `http://192.168.1.52:8000` — log in with **Login
 
 > **Note:** Woodpecker uses versioned image tags — `v3` is used instead of `latest` which has been removed.
 
+> **Note:** Gitea blocks webhooks to private IPs by default. The `GITEA__webhook__ALLOWED_HOST_LIST=192.168.1.52` environment variable in `docker/gitea/docker-compose.yml` allows the Woodpecker webhook to fire. Without this, pushes will not trigger pipelines.
+
+### 9. Enable CI Pipeline in Woodpecker
+
+1. In Woodpecker, go to **Repositories** → find `homelab` → click **Enable**
+2. Push any commit — Woodpecker will automatically run `.woodpecker.yml` on every push
+3. The pipeline runs two steps:
+   - **ansible-lint** — lints all playbooks and roles
+   - **terraform-validate** — validates HCL syntax (no credentials needed)
+
 ---
 
 ## Monitoring Dashboards
