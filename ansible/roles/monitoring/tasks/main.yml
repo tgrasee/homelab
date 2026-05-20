@@ -17,10 +17,11 @@
     src: "{{ playbook_dir }}/../docker/monitoring/prometheus.yml"
     dest: /opt/monitoring/prometheus.yml
 
-- name: Copy .env file
+- name: Create .env from example if it does not exist
   copy:
     src: "{{ playbook_dir }}/../docker/monitoring/.env.example"
     dest: /opt/monitoring/.env
+    force: false
 
 - name: Copy Grafana provisioning config
   copy:
