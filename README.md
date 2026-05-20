@@ -74,7 +74,8 @@ homelab/
 │       ├── proxmox-base/    # Proxmox host hardening & config
 │       ├── docker/          # Docker + Compose install
 │       ├── monitoring/      # Deploy the monitoring stack
-│       └── proxmox-backup/  # Install & configure Proxmox Backup Server
+│       ├── proxmox-backup/  # Install & configure Proxmox Backup Server
+│       └── gitea/           # Deploy Gitea + Woodpecker CI
 │
 ├── terraform/               # VM provisioning
 │   ├── modules/

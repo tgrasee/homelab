@@ -29,6 +29,21 @@ module "monitoring_vm" {
   ssh_public_key    = var.ssh_public_key
 }
 
+module "gitea_vm" {
+  source = "../../modules/vm"
+
+  vm_name           = "gitea"
+  vm_id             = 102
+  target_node       = var.target_node
+  clone_template_id = var.clone_template_id
+  cores             = 2
+  memory            = 4096
+  disk_size         = 32
+  ip_address        = var.gitea_ip
+  gateway           = var.gateway
+  ssh_public_key    = var.ssh_public_key
+}
+
 module "pbs_vm" {
   source = "../../modules/vm"
 
@@ -78,6 +93,12 @@ variable "monitoring_ip" {
   description = "Static IP for monitoring VM"
   type        = string
   default     = "10.0.10.10/24"
+}
+
+variable "gitea_ip" {
+  description = "Static IP for Gitea/Woodpecker VM"
+  type        = string
+  default     = "192.168.1.52/24"
 }
 
 variable "pbs_ip" {

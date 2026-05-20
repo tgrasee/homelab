@@ -58,10 +58,11 @@ cd ansible
 ansible-playbook -i inventory/hosts.yml site.yml --tags proxmox-base
 ```
 
-## Step 5: Create Ubuntu Cloud-Init Template in Proxmox
+## Step 5: Create Cloud-Init Templates in Proxmox
 
-Terraform clones this template to create VMs. Run on the Proxmox host:
+Two templates are required. Run on the Proxmox host:
 
+**Ubuntu 22.04 (VM ID 9000)** — used for monitoring and Gitea VMs:
 ```bash
 wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 qm create 9000 --name ubuntu-22.04-template --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
@@ -72,6 +73,20 @@ qm set 9000 --boot c --bootdisk scsi0
 qm set 9000 --serial0 socket --vga serial0
 qm template 9000
 ```
+
+**Debian 12 (VM ID 9001)** — used for the PBS VM (PBS packages require Debian Bookworm):
+```bash
+wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+qm create 9001 --name debian-12-template --memory 2048 --cores 2 --net0 virtio,bridge=vmbr0
+qm importdisk 9001 debian-12-genericcloud-amd64.qcow2 local-lvm
+qm set 9001 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-9001-disk-0
+qm set 9001 --ide2 local-lvm:cloudinit
+qm set 9001 --boot c --bootdisk scsi0
+qm set 9001 --serial0 socket --vga serial0
+qm template 9001
+```
+
+> **Note:** Ubuntu VMs default to user `ubuntu`; Debian VMs default to user `debian`.
 
 ## Step 6: Provision VMs with Terraform
 
@@ -88,12 +103,14 @@ cp terraform.tfvars.example terraform.tfvars
 > **Note:** The Proxmox API user is `root@pam` — this is correct even though your SSH prompt shows `root@pve`. They are different things.
 
 ```bash
-terraform init
+terraform init   # required on first run and whenever new modules are added
 terraform plan
 terraform apply
 ```
 
-After apply, add the new VM's IP to `ansible/inventory/hosts.yml` under `monitoring_vms`.
+> **Note:** Run `terraform init` again any time you add a new module or provider — it downloads the required plugins. Use `terraform plan -target=module.<name>` to plan a single VM without affecting others.
+
+After apply, add each new VM's IP to `ansible/inventory/hosts.yml` under its group.
 
 ## Step 7: Accept SSH Host Key for New VMs
 
@@ -119,3 +136,28 @@ Open Grafana at `http://<vm-ip>:3000`
 Default login: `admin / changeme` (change immediately!)
 
 Prometheus and Loki are automatically configured as datasources via provisioning. Verify at **Connections → Data Sources**.
+
+## Step 9: Deploy Proxmox Backup Server
+
+```bash
+cd ansible
+ansible-playbook -i inventory/hosts.yml site.yml --tags pbs
+```
+
+After the playbook completes:
+1. Set a root password on the PBS VM: `ssh debian@<pbs-ip>` then `sudo passwd root`
+2. Access the PBS web UI at `https://<pbs-ip>:8007`
+3. In Proxmox UI → **Datacenter → Storage → Add → Proxmox Backup Server**
+4. Get the fingerprint: `sudo proxmox-backup-manager cert info | grep Fingerprint`
+5. Set up a backup schedule at **Datacenter → Backup → Add** (daily, Snapshot, ZSTD)
+
+## Step 10: Deploy Gitea & Woodpecker CI
+
+```bash
+cd ansible
+ansible-playbook -i inventory/hosts.yml site.yml --tags docker
+ansible-playbook -i inventory/hosts.yml site.yml --tags gitea
+```
+
+Access Gitea at `http://<gitea-ip>:3000` to complete the setup wizard.
+Woodpecker CI will be available at `http://<gitea-ip>:8000`.
