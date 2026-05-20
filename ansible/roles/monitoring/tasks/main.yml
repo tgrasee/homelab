@@ -22,6 +22,11 @@
     src: "{{ playbook_dir }}/../docker/monitoring/.env.example"
     dest: /opt/monitoring/.env
 
+- name: Copy Grafana provisioning config
+  copy:
+    src: "{{ playbook_dir }}/../docker/monitoring/provisioning/"
+    dest: /opt/monitoring/provisioning/
+
 - name: Start monitoring stack
   community.docker.docker_compose_v2:
     project_src: /opt/monitoring

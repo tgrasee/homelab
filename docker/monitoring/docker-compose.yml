@@ -14,6 +14,7 @@ services:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - prometheus
       - loki

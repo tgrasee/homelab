@@ -100,47 +100,52 @@ homelab/
 - Ansible and Terraform installed on your workstation
 - SSH key pair generated
 
+See [`docs/runbook/initial-setup.md`](docs/runbook/initial-setup.md) for the full step-by-step guide. Summary below:
+
 ### 1. Install Proxmox (Unattended)
 See [`proxmox-install/README.md`](proxmox-install/README.md) for full instructions.
 
-```
-# Copy answer file to a USB alongside the Proxmox ISO
-# Boot from USB - install completes automatically
+### 2. Create Terraform Role in Proxmox
+The `bpg/proxmox` provider requires explicit API permissions. Run on the Proxmox host:
+```bash
+pveum role add Terraform -privs "VM.Allocate,VM.Audit,VM.Clone,VM.Config.CDROM,VM.Config.Cloudinit,VM.Config.CPU,VM.Config.Disk,VM.Config.HWType,VM.Config.Memory,VM.Config.Network,VM.Config.Options,VM.Migrate,VM.PowerMgmt,Datastore.AllocateSpace,Datastore.Audit,SDN.Use,Sys.Audit,Sys.Modify,Pool.Allocate"
+pveum acl modify / -role Terraform -user root@pam
 ```
 
-### 2. Configure Proxmox Host
+### 3. Configure Proxmox Host
 ```bash
 cd ansible
-cp inventory/hosts.yml.example inventory/hosts.yml
-# Edit hosts.yml with your Proxmox IP
-
 ansible-playbook -i inventory/hosts.yml site.yml --tags proxmox-base
 ```
 
-### 3. Provision the Monitoring VM
+### 4. Create Cloud-Init Template & Provision VM
 ```bash
+# On Proxmox host: create Ubuntu 22.04 cloud-init template (VM ID 9000)
+# See runbook Step 5 for full commands
+
 cd terraform/environments/prod
 cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your values
+# Edit terraform.tfvars — use 'cat ~/.ssh/id_ed25519.pub' for the SSH key value
 
-terraform init
-terraform plan
-terraform apply
+terraform init && terraform plan && terraform apply
 ```
 
-### 4. Deploy the Monitoring Stack
+### 5. Deploy the Monitoring Stack
 
-> **Note:** Before running Ansible against a newly provisioned VM, SSH into it once manually to accept the host key. Ansible will fail with a host key verification error if this hasn't been done.
+> **Note:** SSH into the new VM once before running Ansible to accept the host key:
 > ```bash
-> ssh root@<vm-ip>   # type 'yes' when prompted, then exit
+> ssh ubuntu@<vm-ip>   # type 'yes' when prompted, then exit
 > ```
+> Ubuntu cloud images use `ubuntu` as the default user, not `root`.
 
 ```bash
 cd ansible
+# Add the new VM's IP to ansible/inventory/hosts.yml under monitoring_vms first
+ansible-playbook -i inventory/hosts.yml site.yml --tags docker
 ansible-playbook -i inventory/hosts.yml site.yml --tags monitoring
 ```
 
-Grafana will be available at `http://<vm-ip>:3000`
+Grafana will be available at `http://<vm-ip>:3000` — Prometheus and Loki are auto-configured as datasources.
 
 ---
 
