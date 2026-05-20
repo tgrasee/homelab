@@ -53,6 +53,8 @@
 | Logging | Loki + Promtail | Log aggregation |
 | Visualization | Grafana | Dashboards & alerting |
 | UniFi metrics | UnPoller | Exports UCG Ultra metrics to Prometheus |
+| Source control | Gitea | Self-hosted Git service |
+| CI/CD | Woodpecker CI | Pipeline automation integrated with Gitea |
 | Networking | Ubiquiti UniFi (UCG Ultra) | VLANs, firewall, switching |
 
 ---
@@ -84,13 +86,16 @@ homelab/
 │       └── prod/            # Production environment config
 │
 ├── docker/
-│   └── monitoring/
-│       ├── docker-compose.yml          # Grafana + Prometheus + Loki + UnPoller
-│       ├── prometheus.yml              # Scrape config
-│       ├── .env.example                # Environment variable template
-│       └── provisioning/
-│           └── datasources/
-│               └── datasources.yml    # Auto-provisions Prometheus & Loki in Grafana
+│   ├── monitoring/
+│   │   ├── docker-compose.yml          # Grafana + Prometheus + Loki + UnPoller
+│   │   ├── prometheus.yml              # Scrape config
+│   │   ├── .env.example                # Environment variable template
+│   │   └── provisioning/
+│   │       └── datasources/
+│   │           └── datasources.yml    # Auto-provisions Prometheus & Loki in Grafana
+│   └── gitea/
+│       ├── docker-compose.yml          # Gitea + Woodpecker CI server + agent
+│       └── .env.example                # Woodpecker OAuth + agent secret template
 │
 └── docs/
     ├── architecture/        # Architecture diagrams & decisions
@@ -193,6 +198,31 @@ Set up a backup schedule at **Datacenter → Backup → Add** (recommended: dail
 
 > **Note:** Set a root password on the PBS VM via SSH before accessing the web UI: `sudo passwd root`
 
+### 8. Deploy Gitea & Woodpecker CI
+
+```bash
+cd ansible
+ansible-playbook -i inventory/hosts.yml site.yml --tags docker --limit gitea_vms
+ansible-playbook -i inventory/hosts.yml site.yml --tags gitea
+```
+
+Access Gitea at `http://192.168.1.52:3000` and complete the setup wizard, then:
+
+1. Create an OAuth2 app in Gitea: **Settings → Applications → Manage OAuth2 Applications**
+   - Redirect URI: `http://192.168.1.52:8000/authorize`
+2. Add credentials to `/opt/gitea/.env` on the Gitea VM:
+   ```
+   WOODPECKER_AGENT_SECRET=<random-string>
+   WOODPECKER_ADMIN=<your-gitea-username>
+   WOODPECKER_GITEA_CLIENT=<oauth-client-id>
+   WOODPECKER_GITEA_SECRET=<oauth-client-secret>
+   ```
+3. Restart the stack: `sudo docker compose down && sudo docker compose up -d`
+
+Woodpecker CI is available at `http://192.168.1.52:8000` — log in with **Login with Gitea**.
+
+> **Note:** Woodpecker uses versioned image tags — `v3` is used instead of `latest` which has been removed.
+
 ---
 
 ## Monitoring Dashboards
@@ -227,8 +257,8 @@ VLANs are segmented as follows:
 - [x] Monitoring stack (Grafana + Prometheus + Loki)
 - [x] Ubiquiti UniFi exporter for Prometheus (UnPoller → UCG Ultra)
 - [x] Automated backups with Proxmox Backup Server (VM 101, nightly snapshots)
-- [ ] Gitea self-hosted Git mirror
-- [ ] CI/CD pipeline with Woodpecker CI
+- [x] Gitea self-hosted Git mirror (VM 102, port 3000)
+- [x] CI/CD pipeline with Woodpecker CI (port 8000, OAuth via Gitea)
 
 ---
 

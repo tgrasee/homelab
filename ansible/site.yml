@@ -13,7 +13,7 @@
       tags: proxmox-base
 
 - name: Install Docker on VMs
-  hosts: monitoring_vms
+  hosts: monitoring_vms:gitea_vms
   become: true
   roles:
     - role: docker
@@ -32,3 +32,10 @@
   roles:
     - role: proxmox-backup
       tags: pbs
+
+- name: Deploy Gitea and Woodpecker CI
+  hosts: gitea_vms
+  become: true
+  roles:
+    - role: gitea
+      tags: gitea

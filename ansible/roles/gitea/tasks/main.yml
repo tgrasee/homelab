@@ -1,0 +1,23 @@
+---
+- name: Create gitea directory
+  file:
+    path: /opt/gitea
+    state: directory
+    mode: "0755"
+
+- name: Copy docker-compose.yml
+  copy:
+    src: "{{ playbook_dir }}/../docker/gitea/docker-compose.yml"
+    dest: /opt/gitea/docker-compose.yml
+
+- name: Create .env from example if it does not exist
+  copy:
+    src: "{{ playbook_dir }}/../docker/gitea/.env.example"
+    dest: /opt/gitea/.env
+    force: false
+
+- name: Start Gitea stack
+  community.docker.docker_compose_v2:
+    project_src: /opt/gitea
+    docker_cli: /usr/bin/docker
+    state: present
