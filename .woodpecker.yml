@@ -1,4 +1,7 @@
 ---
+when:
+  - event: push
+
 steps:
   - name: ansible-lint
     image: pipelinecomponents/ansible-lint:latest
