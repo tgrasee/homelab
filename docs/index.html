@@ -5,6 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Homelab — Automated Infrastructure Stack</title>
   <link rel="stylesheet" href="assets/css/style.css" />
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        background: '#1a1d27',
+        primaryColor: '#2d3148',
+        primaryTextColor: '#e2e8f0',
+        primaryBorderColor: '#4f9cf9',
+        lineColor: '#4f9cf9',
+        secondaryColor: '#1a1d27',
+        tertiaryColor: '#1a1d27',
+        clusterBkg: '#1a1d27',
+        clusterBorder: '#2d3148',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontSize: '16px'
+      }
+    });
+  </script>
 </head>
 <body>
 
@@ -150,6 +170,42 @@
     <div class="container">
       <h2 class="section-title">Architecture</h2>
       <p class="section-sub">Three VMs, one host, fully automated.</p>
+
+      <div class="diagram-wrap">
+        <pre class="mermaid">
+graph TB
+    WS["💻 Workstation\nTerraform · Ansible · Git"]
+
+    subgraph PVE["Dell OptiPlex · Proxmox VE 9"]
+        subgraph M["VM 100 · monitoring · 192.168.1.50"]
+            G[Grafana]
+            P[Prometheus]
+            L[Loki]
+            UP[UnPoller]
+        end
+        subgraph PBS_VM["VM 101 · pbs · 192.168.1.51"]
+            PBS[Proxmox Backup Server]
+        end
+        subgraph GIT["VM 102 · gitea · 192.168.1.52"]
+            GITEA[Gitea]
+            WP[Woodpecker CI]
+        end
+    end
+
+    UCG["🌐 UniFi UCG Ultra"]
+
+    WS -->|provision + configure| PVE
+    WS -->|git push| GITEA
+    GITEA -->|webhook| WP
+    UCG -->|metrics| UP
+    UP --> P
+    P --> G
+    L --> G
+    M -->|nightly backup| PBS_VM
+    GIT -->|nightly backup| PBS_VM
+        </pre>
+      </div>
+
       <div class="arch-grid">
         <div class="arch-card">
           <div class="arch-vm">VM 100 · monitoring</div>
