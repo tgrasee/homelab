@@ -1,0 +1,112 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: Homelab
+    folder: Homelab Alerts
+    interval: 1m
+    rules:
+      - uid: homelab-node-down
+        title: Node Down
+        condition: B
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              expr: up == 0
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: B
+              expression: A
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - B
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: "Node {{ $labels.instance }} is down"
+          description: "Node {{ $labels.instance }} has been unreachable for more than 1 minute"
+        labels:
+          severity: critical
+        isPaused: false
+
+      - uid: homelab-disk-high
+        title: Disk Usage High
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              expr: "(1 - node_filesystem_avail_bytes{mountpoint='/',fstype!='tmpfs'} / node_filesystem_size_bytes{mountpoint='/',fstype!='tmpfs'}) * 100"
+              refId: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: reduce
+              refId: B
+              expression: A
+              reducer: last
+              settings:
+                mode: dropNN
+          - refId: C
+            relativeTimeRange:
+              from: 0
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 85
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: "Disk usage high on {{ $labels.instance }}"
+          description: "Disk usage on {{ $labels.instance }} is above 85%"
+        labels:
+          severity: warning
+        isPaused: false
