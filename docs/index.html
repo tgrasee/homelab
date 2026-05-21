@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Homelab — Automated Infrastructure Stack</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Nav ─────────────────────────────────────────────────── -->
+  <nav>
+    <span class="nav-name">Tyler Grasee</span>
+    <a href="https://github.com/tgrasee/homelab" target="_blank" class="btn btn-outline">View on GitHub</a>
+  </nav>
+
+  <!-- ── Hero ─────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="badge">Infrastructure as Code</div>
+      <h1>Automated Homelab<br />Infrastructure Stack</h1>
+      <p class="hero-sub">
+        A fully automated home server built on Proxmox — provisioned with Terraform,
+        configured with Ansible, monitored with Grafana, and validated on every push
+        with a CI/CD pipeline.
+      </p>
+      <div class="hero-actions">
+        <a href="#stack" class="btn btn-primary">See the Stack</a>
+        <a href="https://github.com/YOUR_GITHUB_USERNAME/homelab" target="_blank" class="btn btn-outline">GitHub Repo</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Story ─────────────────────────────────────────────────── -->
+  <section class="section" id="story">
+    <div class="container grid-2">
+
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <h2>Zero-Touch Operations</h2>
+        <p>
+          The entire server — from OS install to running services — is defined as code.
+          A single command provisions VMs, installs software, and deploys all services.
+          No manual steps, no configuration drift, fully repeatable.
+        </p>
+        <p>
+          Automated nightly backups run without intervention. If anything changes
+          unexpectedly, it gets flagged.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🔔</div>
+        <h2>Always-On Monitoring</h2>
+        <p>
+          Grafana dashboards track CPU, memory, disk, and network across every host
+          in real time. Prometheus collects metrics every 15 seconds. Loki aggregates
+          logs from all services.
+        </p>
+        <p>
+          Alerts fire to email the moment a node goes down or disk usage crosses 85% —
+          before it becomes a problem.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Stack ─────────────────────────────────────────────────── -->
+  <section class="section section-dark" id="stack">
+    <div class="container">
+      <h2 class="section-title">The Stack</h2>
+      <p class="section-sub">Every layer defined as code — from bare metal to running services.</p>
+      <table class="stack-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Tool</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Hypervisor</td><td>Proxmox VE 9</td><td>Bare metal virtualization</td></tr>
+          <tr><td>Bare metal provisioning</td><td>Proxmox Answer File</td><td>Unattended OS install</td></tr>
+          <tr><td>Infrastructure as Code</td><td>Terraform</td><td>VM lifecycle management</td></tr>
+          <tr><td>Configuration management</td><td>Ansible</td><td>Post-install config &amp; app deployment</td></tr>
+          <tr><td>Containerization</td><td>Docker Compose</td><td>App packaging &amp; orchestration</td></tr>
+          <tr><td>Metrics</td><td>Prometheus</td><td>Time-series metrics collection</td></tr>
+          <tr><td>Logging</td><td>Loki + Promtail</td><td>Log aggregation</td></tr>
+          <tr><td>Visualization</td><td>Grafana</td><td>Dashboards &amp; alerting</td></tr>
+          <tr><td>Network metrics</td><td>UnPoller</td><td>UniFi UCG Ultra → Prometheus</td></tr>
+          <tr><td>Backups</td><td>Proxmox Backup Server</td><td>Automated nightly VM snapshots</td></tr>
+          <tr><td>Source control</td><td>Gitea</td><td>Self-hosted Git service</td></tr>
+          <tr><td>CI/CD</td><td>Woodpecker CI</td><td>Lint &amp; validate on every push</td></tr>
+          <tr><td>Networking</td><td>Ubiquiti UniFi</td><td>VLANs, firewall, switching</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── Screenshots ───────────────────────────────────────────── -->
+  <section class="section" id="screenshots">
+    <div class="container">
+      <h2 class="section-title">In Action</h2>
+      <p class="section-sub">Live dashboards running on the homelab.</p>
+
+      <div class="screenshots">
+
+        <div class="screenshot-item screenshot-wide">
+          <img src="assets/images/grafana-node-exporter.png" alt="Grafana Node Exporter Dashboard" />
+          <div class="screenshot-caption">
+            <strong>Host Metrics</strong> — CPU, memory, disk, and network tracked in real time via Node Exporter
+          </div>
+        </div>
+
+        <div class="screenshot-item screenshot-wide">
+          <img src="assets/images/grafana-unpoller.png" alt="Grafana UnPoller Dashboard" />
+          <div class="screenshot-caption">
+            <strong>Network Metrics</strong> — UniFi UCG Ultra clients, AP stats, and WAN throughput via UnPoller
+          </div>
+        </div>
+
+        <div class="screenshot-item">
+          <img src="assets/images/grafana-alerts.png" alt="Grafana Alert Rules" />
+          <div class="screenshot-caption">
+            <strong>Alerting</strong> — Node down and disk usage alerts provisioned as code
+          </div>
+        </div>
+
+        <div class="screenshot-item">
+          <img src="assets/images/woodpecker-pipeline.png" alt="Woodpecker CI Pipeline" />
+          <div class="screenshot-caption">
+            <strong>CI/CD Pipeline</strong> — Ansible lint and Terraform validate on every push
+          </div>
+        </div>
+
+        <div class="screenshot-item screenshot-wide">
+          <img src="assets/images/proxmox-vms.png" alt="Proxmox VM Overview" />
+          <div class="screenshot-caption">
+            <strong>Infrastructure</strong> — Three VMs provisioned and managed via Terraform
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Architecture ──────────────────────────────────────────── -->
+  <section class="section section-dark" id="architecture">
+    <div class="container">
+      <h2 class="section-title">Architecture</h2>
+      <p class="section-sub">Three VMs, one host, fully automated.</p>
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-vm">VM 100 · monitoring</div>
+          <ul>
+            <li>Grafana</li>
+            <li>Prometheus</li>
+            <li>Loki + Promtail</li>
+            <li>UnPoller</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-vm">VM 101 · pbs</div>
+          <ul>
+            <li>Proxmox Backup Server</li>
+            <li>Nightly VM snapshots</li>
+            <li>60 GB backup datastore</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-vm">VM 102 · gitea</div>
+          <ul>
+            <li>Gitea (self-hosted Git)</li>
+            <li>Woodpecker CI server</li>
+            <li>Woodpecker agent</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ───────────────────────────────────────────────────── -->
+  <section class="section cta-section">
+    <div class="container cta-inner">
+      <h2>See the full source</h2>
+      <p>Every config file, playbook, and pipeline is open on GitHub.</p>
+      <a href="https://github.com/YOUR_GITHUB_USERNAME/homelab" target="_blank" class="btn btn-primary">View on GitHub</a>
+    </div>
+  </section>
+
+  <!-- ── Footer ────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <span>Built by YOUR FULL NAME</span>
+    </div>
+  </footer>
+
+</body>
+</html>
