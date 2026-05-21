@@ -61,7 +61,7 @@
         <div class="problem-card">
           <div class="problem-label problem-before">Problem</div>
           <h3>Manual setup can't be reproduced</h3>
-          <p>If a server dies, rebuilding it from memory takes days — and it never comes back exactly the same. Every manual step is a potential inconsistency.</p>
+          <p>If a server dies, rebuilding it from memory takes days - and it never comes back exactly the same. Every manual step is a potential inconsistency.</p>
           <div class="problem-label problem-after">Solved by</div>
           <p class="problem-solution">Terraform provisions VMs and Ansible configures them. The entire server rebuilds from a single command, identically, every time.</p>
         </div>
@@ -71,7 +71,7 @@
           <h3>You find out something broke when users complain</h3>
           <p>Without monitoring, outages are discovered by the wrong people at the wrong time. No visibility means no warning.</p>
           <div class="problem-label problem-after">Solved by</div>
-          <p class="problem-solution">Prometheus scrapes metrics every 15 seconds. Grafana alerts fire to email the moment a node goes down or disk fills up — before anyone notices.</p>
+          <p class="problem-solution">Prometheus scrapes metrics every 15 seconds. Grafana alerts fire to email the moment a node goes down or disk fills up - before anyone notices.</p>
         </div>
 
         <div class="problem-card">
@@ -87,7 +87,7 @@
           <h3>Broken configs get deployed with no safety net</h3>
           <p>Without a CI/CD pipeline, there's nothing to catch a bad Ansible playbook or invalid Terraform config before it hits the server.</p>
           <div class="problem-label problem-after">Solved by</div>
-          <p class="problem-solution">Every push to Gitea triggers Woodpecker CI — ansible-lint and terraform validate run automatically and block bad code before it can be applied.</p>
+          <p class="problem-solution">Every push to Gitea triggers Woodpecker CI - ansible-lint and terraform validate run automatically and block bad code before it can be applied.</p>
         </div>
 
       </div>
@@ -290,7 +290,7 @@ graph TB
           <div class="lesson-tag">Terraform</div>
           <div class="lesson-body">
             <h3>Terraform providers are not interchangeable</h3>
-            <p>The commonly documented <code>telmate/proxmox</code> provider is incompatible with Proxmox 9. Migrating to <code>bpg/proxmox</code> required rewriting the VM resource schema entirely — different attribute names, different block structures. Always verify provider compatibility with your target platform version before starting.</p>
+            <p>The commonly documented <code>telmate/proxmox</code> provider is incompatible with Proxmox 9. Migrating to <code>bpg/proxmox</code> required rewriting the VM resource schema entirely - different attribute names, different block structures. Always verify provider compatibility with your target platform version before starting.</p>
           </div>
         </div>
 
@@ -306,7 +306,7 @@ graph TB
           <div class="lesson-tag">Ansible</div>
           <div class="lesson-body">
             <h3>Idempotency must be explicitly designed in</h3>
-            <p>Re-running an Ansible playbook overwrote the production <code>.env</code> file, wiping live credentials. The fix was adding <code>force: false</code> to copy tasks so they only create the file if it doesn't already exist. Idempotency doesn't happen automatically — every task needs to be written with re-runs in mind.</p>
+            <p>Re-running an Ansible playbook overwrote the production <code>.env</code> file, wiping live credentials. The fix was adding <code>force: false</code> to copy tasks so they only create the file if it doesn't already exist. Idempotency doesn't happen automatically - every task needs to be written with re-runs in mind.</p>
           </div>
         </div>
 
@@ -314,7 +314,7 @@ graph TB
           <div class="lesson-tag">OS Compatibility</div>
           <div class="lesson-body">
             <h3>Some packages are OS-specific</h3>
-            <p>Proxmox Backup Server packages depend on Debian Bookworm-specific library versions and fail to install on Ubuntu 22.04 due to dependency conflicts. This required provisioning a separate Debian 12 VM for PBS rather than reusing the Ubuntu template — a constraint that isn't obvious until you hit it.</p>
+            <p>Proxmox Backup Server packages depend on Debian Bookworm-specific library versions and fail to install on Ubuntu 22.04 due to dependency conflicts. This required provisioning a separate Debian 12 VM for PBS rather than reusing the Ubuntu template - a constraint that isn't obvious until you hit it.</p>
           </div>
         </div>
 
@@ -331,6 +331,14 @@ graph TB
           <div class="lesson-body">
             <h3>Provisioned datasource UIDs must match exactly</h3>
             <p>Grafana auto-generates a UID when a datasource is first created. Provisioned dashboards that reference <code>${DS_PROMETHEUS}</code> fail silently if that variable isn't mapped to the actual UID at import time. The fix was to pin a fixed UID in the datasource provisioning YAML and update the dashboard JSON to reference it directly.</p>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson-tag">AI Tooling</div>
+          <div class="lesson-body">
+            <h3>AI-assisted development accelerates without replacing understanding</h3>
+            <p>Claude Code was used throughout this project to accelerate troubleshooting, generate documentation, and scaffold automation. The key insight: AI tooling is most effective when you can evaluate what it produces. Every generated config was reviewed, every error was diagnosed, and every fix was understood before being applied. The result was faster iteration without sacrificing ownership of the outcome.</p>
           </div>
         </div>
 
