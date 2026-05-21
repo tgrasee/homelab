@@ -382,6 +382,8 @@ footer {
   white-space: nowrap;
   margin-top: 2px;
   flex-shrink: 0;
+  width: 120px;
+  text-align: center;
 }
 
 .lesson-body h3 {
