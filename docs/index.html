@@ -279,6 +279,65 @@ graph TB
     </div>
   </section>
 
+  <!-- ── Lessons Learned ──────────────────────────────────────── -->
+  <section class="section" id="lessons">
+    <div class="container">
+      <h2 class="section-title">Lessons Learned</h2>
+      <p class="section-sub">Real problems encountered during the build and how they were resolved.</p>
+      <div class="lessons-list">
+
+        <div class="lesson">
+          <div class="lesson-tag">Terraform</div>
+          <div class="lesson-body">
+            <h3>Terraform providers are not interchangeable</h3>
+            <p>The commonly documented <code>telmate/proxmox</code> provider is incompatible with Proxmox 9. Migrating to <code>bpg/proxmox</code> required rewriting the VM resource schema entirely — different attribute names, different block structures. Always verify provider compatibility with your target platform version before starting.</p>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson-tag">Ansible</div>
+          <div class="lesson-body">
+            <h3>Cloud images don't use root</h3>
+            <p>Ubuntu cloud-init images use <code>ubuntu</code> as the default SSH user, not <code>root</code>. Ansible was silently failing to connect until the inventory was updated with <code>ansible_user: ubuntu</code>. Additionally, SSH host key verification must be accepted manually before any automation can connect for the first time.</p>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson-tag">Ansible</div>
+          <div class="lesson-body">
+            <h3>Idempotency must be explicitly designed in</h3>
+            <p>Re-running an Ansible playbook overwrote the production <code>.env</code> file, wiping live credentials. The fix was adding <code>force: false</code> to copy tasks so they only create the file if it doesn't already exist. Idempotency doesn't happen automatically — every task needs to be written with re-runs in mind.</p>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson-tag">OS Compatibility</div>
+          <div class="lesson-body">
+            <h3>Some packages are OS-specific</h3>
+            <p>Proxmox Backup Server packages depend on Debian Bookworm-specific library versions and fail to install on Ubuntu 22.04 due to dependency conflicts. This required provisioning a separate Debian 12 VM for PBS rather than reusing the Ubuntu template — a constraint that isn't obvious until you hit it.</p>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson-tag">Networking</div>
+          <div class="lesson-body">
+            <h3>Gitea blocks webhooks to private IPs by default</h3>
+            <p>After enabling the Woodpecker CI repo, pushes weren't triggering pipelines. Gitea has a security feature that blocks outbound webhook calls to private IP ranges to prevent SSRF attacks. Since Woodpecker runs on the same local network, the webhook was silently denied until <code>GITEA__webhook__ALLOWED_HOST_LIST</code> was configured.</p>
+          </div>
+        </div>
+
+        <div class="lesson">
+          <div class="lesson-tag">Grafana</div>
+          <div class="lesson-body">
+            <h3>Provisioned datasource UIDs must match exactly</h3>
+            <p>Grafana auto-generates a UID when a datasource is first created. Provisioned dashboards that reference <code>${DS_PROMETHEUS}</code> fail silently if that variable isn't mapped to the actual UID at import time. The fix was to pin a fixed UID in the datasource provisioning YAML and update the dashboard JSON to reference it directly.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ── CTA ───────────────────────────────────────────────────── -->
   <section class="section cta-section">
     <div class="container cta-inner">
