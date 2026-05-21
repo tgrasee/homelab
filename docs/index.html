@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Homelab — Automated Infrastructure Stack</title>
+  <title>Homelab - Automated Infrastructure Stack</title>
   <link rel="stylesheet" href="assets/css/style.css" />
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
@@ -51,6 +51,49 @@
     </div>
   </section>
 
+  <!-- ── Problems Solved ──────────────────────────────────────── -->
+  <section class="section section-dark" id="problems">
+    <div class="container">
+      <h2 class="section-title">Problems Solved</h2>
+      <p class="section-sub">Real infrastructure problems this project is built to address.</p>
+      <div class="problems-grid">
+
+        <div class="problem-card">
+          <div class="problem-label problem-before">Problem</div>
+          <h3>Manual setup can't be reproduced</h3>
+          <p>If a server dies, rebuilding it from memory takes days — and it never comes back exactly the same. Every manual step is a potential inconsistency.</p>
+          <div class="problem-label problem-after">Solved by</div>
+          <p class="problem-solution">Terraform provisions VMs and Ansible configures them. The entire server rebuilds from a single command, identically, every time.</p>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label problem-before">Problem</div>
+          <h3>You find out something broke when users complain</h3>
+          <p>Without monitoring, outages are discovered by the wrong people at the wrong time. No visibility means no warning.</p>
+          <div class="problem-label problem-after">Solved by</div>
+          <p class="problem-solution">Prometheus scrapes metrics every 15 seconds. Grafana alerts fire to email the moment a node goes down or disk fills up — before anyone notices.</p>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label problem-before">Problem</div>
+          <h3>One failure and the data is gone</h3>
+          <p>Without automated backups, a single disk failure or misconfiguration can wipe everything. Manual backup processes get skipped under pressure.</p>
+          <div class="problem-label problem-after">Solved by</div>
+          <p class="problem-solution">Proxmox Backup Server runs nightly VM snapshots automatically. No manual steps, no skipped nights.</p>
+        </div>
+
+        <div class="problem-card">
+          <div class="problem-label problem-before">Problem</div>
+          <h3>Broken configs get deployed with no safety net</h3>
+          <p>Without a CI/CD pipeline, there's nothing to catch a bad Ansible playbook or invalid Terraform config before it hits the server.</p>
+          <div class="problem-label problem-after">Solved by</div>
+          <p class="problem-solution">Every push to Gitea triggers Woodpecker CI — ansible-lint and terraform validate run automatically and block bad code before it can be applied.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ── Story ─────────────────────────────────────────────────── -->
   <section class="section" id="story">
     <div class="container grid-2">
@@ -78,7 +121,7 @@
           logs from all services.
         </p>
         <p>
-          Alerts fire to email the moment a node goes down or disk usage crosses 85% —
+          Alerts fire to email the moment a node goes down or disk usage crosses 85% -
           before it becomes a problem.
         </p>
       </div>

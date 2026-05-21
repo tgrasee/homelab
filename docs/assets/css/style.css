@@ -298,6 +298,60 @@ footer {
   font-size: 0.85rem;
 }
 
+/* ── Problems Solved ──────────────────────────────────────────── */
+.problems-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.problem-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.problem-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.problem-card p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.problem-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.problem-before {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.problem-after {
+  background: rgba(0, 212, 170, 0.15);
+  color: var(--accent-2);
+  margin-top: 8px;
+}
+
+.problem-solution {
+  color: var(--text) !important;
+}
+
 /* ── Diagram ──────────────────────────────────────────────────── */
 .diagram-wrap {
   background: var(--bg-card);
